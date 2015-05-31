@@ -1,0 +1,69 @@
+<?php
+
+/**
+ * When the user logs in, redirect them to the cart if they have items in
+ * their cart. If they don't have items in their cart, take them to the
+ * products home page.
+ *
+ * Implements hook_user_login
+ */
+function yg_user_user_login(&$edit, $account) {
+  //make sure password reset is not impared
+  if (isset($_POST['form_id']) &&
+      $_POST['form_id'] == 'user_pass_reset' &&
+      !variable_get('login_destination_immediate_redirect', FALSE)) {
+    return;
+  }
+
+
+  //compile some useful conditions
+  $items_in_cart = false;
+
+  global $user;
+  $order_id = commerce_cart_order_id($user->uid);
+
+  //if an order exists, and there are items in their cart, then set
+  //$items_in_cart equal to true.
+  if ($order_id) {
+    $order = commerce_cart_order_load($user->uid);
+
+    $items_in_cart =
+      isset($order->commerce_line_items['und']) &&
+      sizeof($order->commerce_line_items['und']) > 0;
+  }
+
+  //redirect the user based on certain conditions
+  global $conf;
+  $site_path = $conf['yg']['current_path'];
+  if ($items_in_cart) {
+    $edit['redirect'] = 'cart';
+  }
+  else {
+    $dest = drupal_get_destination();
+    if ($dest && $dest['destination'] != "user/login") {
+      $edit['redirect'] = $dest;
+    }
+    else {
+      $edit['redirect'] = $site_path;
+    }
+  }
+}
+
+/**
+ * Implements hook_menu_alter().
+ */
+function yg_user_menu_alter(&$items) {
+  $items['user/%user']['title callback'] = '_yg_user_page_title';
+}
+
+function _yg_user_page_title($account = NULL) {
+  if (!is_object($account)) {
+    $account = $GLOBALS['user'];
+  }
+	if(isset($account->field_first_name['und'][0])) {
+		$username = $account->field_first_name['und'][0]['value'];
+	} else {
+		$username = $account->name;
+	}
+  return t('Hello, @user', array('@user' => $username));
+}

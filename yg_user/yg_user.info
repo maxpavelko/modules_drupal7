@@ -1,0 +1,13 @@
+name = yg - User
+description = Settings and overrides for the user login system
+core = 7.x
+package = yg
+dependencies[] = commerce
+dependencies[] = features
+dependencies[] = field_sql_storage
+dependencies[] = text
+dependencies[] = yg_order_post_xml
+features[features_api][] = api:1
+features[field][] = user-user-field_phone
+features[rules_config][] = rules_yg_assign_an_anonymous_order_to_a_pre_existing_user
+features[rules_config][] = rules_yg_create_a_new_account_for_an_anonymous_order
