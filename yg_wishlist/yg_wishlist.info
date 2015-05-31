@@ -1,0 +1,8 @@
+name = yg wishlist info
+description = Modifications to the wishlist
+core = 7.x
+package = yg
+dependencies[] = rules
+dependencies[] = entity
+dependencies[] = commerce
+dependencies[] = commerce_wishlist

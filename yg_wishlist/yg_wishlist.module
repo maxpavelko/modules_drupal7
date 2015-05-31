@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * @file
+ * Extends Wishlist to include a Store ID field that is
+ * addressable
+ */
+
+
+
+/**
+ * Implements hook_views_api().
+ */
+function yg_wishlist_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'yg_wishlist'),
+  );
+}

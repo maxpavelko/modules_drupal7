@@ -1,0 +1,76 @@
+<?php
+
+/**
+ * Implements hook_schema_alter().
+ */
+function yg_wishlist_schema_alter(&$schema) {
+
+  $schema['commerce_wishlist']['fields']['w_store_id'] = array(
+    'description' => 'The store the item was added from.',
+    'type' => 'varchar',
+    'length' => 2,
+    'default' => 'yv',
+    'not null' => FALSE,
+  );
+
+}
+
+/**
+ * Implements hook_install
+ */
+function yg_wishlist_install() {
+
+  $schema = array();
+  yg_wishlist_schema_alter($schema);
+  foreach ($schema as $table => $table_specs) {
+    if (isset($table_specs['fields'])) {
+      foreach ($table_specs['fields'] as $name => $spec) {
+        db_add_field($table, $name, $spec);
+      }
+    }
+
+    if (isset($table_specs['indexes'])) {
+      foreach ($table_specs['indexes'] as $name => $fields) {
+        db_add_index($table, $name, $fields);
+      }
+    }
+
+  };
+}
+
+/**
+ * Implements hook_uninstall
+ */
+function yg_wishlist_uninstall() {
+  $schema = array();
+  yg_wishlist_schema_alter($schema);
+  foreach ($schema as $table => $table_specs) {
+    if (isset($table_specs['indexes'])) {
+      foreach ($table_specs['indexes'] as $name => $fields) {
+        db_drop_index($table, $name, $fields);
+      }
+    }
+
+    if (isset($table_specs['fields'])) {
+      foreach ($table_specs['fields'] as $name => $spec) {
+        db_drop_field($table, $name, $spec);
+      }
+    }
+  };
+}
+
+/**
+ * Implements hook_update_n().
+ * Add the w_store_id fields if they do not exist.
+ */
+function yg_wishlist_update_7001() {
+  $spec = array(
+    'description' => 'The store the item was added from.',
+    'type' => 'varchar',
+    'length' => 2,
+    'default' => 'yv',
+    'not null' => FALSE,
+  );
+
+  db_add_field('commerce_wishlist', 'w_store_id', $spec);
+}
